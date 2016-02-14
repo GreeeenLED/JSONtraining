@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements asyncTask.resultJ
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //btw how GIT works
         text = (TextView) findViewById(R.id.textView);
     }
 

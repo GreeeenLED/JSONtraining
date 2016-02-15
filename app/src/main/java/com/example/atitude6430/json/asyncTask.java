@@ -14,14 +14,16 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Atitude6430 on 2016-02-14.
  */
-public class asyncTask extends AsyncTask<String, Void, String> {
+public class asyncTask extends AsyncTask<String, Void, List<String>> {
 
     @Override
-    protected String doInBackground(String... params) {
+    protected List<String> doInBackground(String... params) {
         HttpURLConnection connection=null;
         BufferedReader reader = null;
 
@@ -39,15 +41,26 @@ public class asyncTask extends AsyncTask<String, Void, String> {
                 buffer.append(line);
             }
 
+            List<String> nameList = new ArrayList<String>();
+
             String finalJSON = buffer.toString();
             JSONObject parentObject = new JSONObject(finalJSON);
-            JSONArray arrayJSON = parentObject.getJSONArray("movies");
-            JSONObject finalObject = arrayJSON.getJSONObject(0);
-
-            String name = finalObject.getString("movie");
-            Integer year = finalObject.getInt("year");
-
-            return name+" "+year;
+            JSONArray arrayJSON = parentObject.getJSONArray("contacts");
+            //Log.d("array","caly array: "+arrayJSON.toString());
+            //Log.d("array", "length: " + arrayJSON.length());
+            JSONObject finalObject = null;
+            for (int i = 0 ;i<arrayJSON.length();i++){
+                finalObject = arrayJSON.getJSONObject(i);
+                nameList.add(finalObject.getString("name") + " " + finalObject.getJSONObject("phone").getString("home"));
+               // Log.d("ID", "added: " + nameList.get(i));
+            }
+            for (int i = 0 ;i<nameList.size();i++){
+                Log.d("ID","pobrane: "+nameList.get(i));
+            }
+            //String name = finalObject.getString("name");
+            //String year = finalObject.getString("gender");
+            //return name+" "+year;
+            return nameList;
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -73,11 +86,11 @@ public class asyncTask extends AsyncTask<String, Void, String> {
     }
     public resultJSON data= null;
     public interface resultJSON{
-        public void sendResultToMain(String output);
+        public void sendResultToMain(List<String> output);
     }
 
     @Override
-    protected void onPostExecute(String result) {
+    protected void onPostExecute(List<String> result) {
         Log.d("Koniec","post execute "+result);
         data.sendResultToMain(result);
     }
